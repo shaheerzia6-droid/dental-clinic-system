@@ -1,0 +1,15 @@
+body {
+    background-color: #f5f5f5;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}

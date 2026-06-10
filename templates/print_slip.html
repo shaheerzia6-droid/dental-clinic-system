@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Payment Slip #{{ visit.id }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .slip {
+            width: 300px;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px dashed #333;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .header h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .header p {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 11px;
+        }
+
+        .divider {
+            border-top: 1px dashed #999;
+            margin: 8px 0;
+        }
+
+        .total {
+            font-weight: bold;
+            font-size: 13px;
+            border-top: 2px solid #333;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 9px;
+            color: #888;
+            border-top: 1px dashed #ccc;
+            padding-top: 8px;
+        }
+
+        .print-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+
+            .slip {
+                box-shadow: none;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div class="slip">
+            <div class="header">
+                <h3>🦷 MASHHOOD DENTAL HOSPITAL</h3>
+                <p>Dr. Mashhood Jawad</p>
+                <p>0331 8400350</p>
+            </div>
+
+            <div class="info-row">
+                <span>Slip #:</span>
+                <span>{{ visit.id }}</span>
+            </div>
+            <div class="info-row">
+                <span>Date:</span>
+                <span>{{ visit.visit_date.strftime('%d/%m/%Y %H:%M') }}</span>
+            </div>
+            <div class="info-row">
+                <span>Patient:</span>
+                <span>{{ visit.patient.name }}</span>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="info-row">
+                <span>Checkup Fee:</span>
+                <span>Rs. {{ "%.2f"|format(visit.slip_fee) }}</span>
+            </div>
+
+            {% if visit.procedures %}
+            {% for proc in visit.procedures %}
+            <div class="info-row">
+                <span>{{ proc.procedure_name }}:</span>
+                <span>Rs. {{ "%.2f"|format(proc.paid_amount) }}</span>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <div class="divider"></div>
+
+            <div class="info-row total">
+                <span><strong>TOTAL PAID:</strong></span>
+                <span><strong>Rs. {{ "%.2f"|format(visit.total_paid) }}</strong></span>
+            </div>
+
+            <div class="footer">
+                Keep this slip for future reference<br>
+                Thank you for visiting!
+            </div>
+        </div>
+
+        <button class="print-btn" onclick="window.print();">
+            🖨️ Print Payment Slip
+        </button>
+    </div>
+</body>
+
+</html>

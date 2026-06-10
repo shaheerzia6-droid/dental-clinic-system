@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">{{ patient.name }}</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Patient Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Phone:</strong> {{ patient.phone }}</p>
+                <p><strong>Email:</strong> {{ patient.email or 'Not provided' }}</p>
+                <p><strong>Registered:</strong> {{ patient.created_at.strftime('%Y-%m-%d') }}</p>
+                <a href="{{ url_for('edit_patient', patient_id=patient.id) }}" class="btn btn-warning">✏️ Edit</a>
+                <a href="{{ url_for('checkin', patient_id=patient.id) }}" class="btn btn-success">✅ Check In</a>
+                {% if role == 'doctor' %}
+                <form method="POST" action="{{ url_for('delete_patient', patient_id=patient.id) }}"
+                    style="display: inline;">
+                    <button type="submit" class="btn btn-danger"
+                        onclick="return confirm('Delete {{ patient.name }} and all their records?')">🗑️ Delete</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Visit History</h5>
+            </div>
+            <div class="card-body">
+                {% if patient.visits %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Slip Fee (Rs.)</th>
+                                <th>Total Paid (Rs.)</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for visit in patient.visits|reverse %}
+                            <tr>
+                                <td>{{ visit.visit_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>Rs. {{ "%.2f"|format(visit.slip_fee) }}</td>
+                                <td>Rs. {{ "%.2f"|format(visit.total_paid) }}</td>
+                                <td>{{ visit.status }}</td>
+                                <td>
+                                    {% if role == 'doctor' %}
+                                    <a href="{{ url_for('doctor_visit_detail', visit_id=visit.id) }}"
+                                        class="btn btn-sm btn-info">View & Edit</a>
+                                    {% else %}
+                                    <a href="{{ url_for('visit_detail', visit_id=visit.id) }}"
+                                        class="btn btn-sm btn-info">View</a>
+                                    {% endif %}
+                                    <a href="{{ url_for('print_slip', visit_id=visit.id) }}"
+                                        class="btn btn-sm btn-secondary" target="_blank">Print</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No previous visits</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

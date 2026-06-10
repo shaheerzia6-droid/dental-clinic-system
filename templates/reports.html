@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Financial Reports</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Revenue (Last {{ days }} days)</h5>
+                <h2 class="display-5">Rs. {{ "%.2f"|format(total_revenue) }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Total Visits</h5>
+                <h2 class="display-5">{{ total_visits }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Average per Visit</h5>
+                <h2 class="display-5">Rs. {{ "%.2f"|format(avg_per_visit) }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <form method="GET" class="row g-3">
+            <div class="col-auto">
+                <label for="days" class="col-form-label">Show last:</label>
+            </div>
+            <div class="col-auto">
+                <select name="days" id="days" class="form-select">
+                    <option value="7" {% if days==7 %}selected{% endif %}>7 days</option>
+                    <option value="30" {% if days==30 %}selected{% endif %}>30 days</option>
+                    <option value="90" {% if days==90 %}selected{% endif %}>90 days</option>
+                    <option value="365" {% if days==365 %}selected{% endif %}>1 year</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Apply</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Daily Breakdown -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5>Daily Revenue Breakdown</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Visits</th>
+                        <th>Slip Fees (Rs.)</th>
+                        <th>Procedure Payments (Rs.)</th>
+                        <th>Total Revenue (Rs.)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in daily_breakdown %}
+                    <tr>
+                        <td>{{ day.date }}</td>
+                        <td>{{ day.visits }}</td>
+                        <td>Rs. {{ "%.2f"|format(day.slip_total) }}</td>
+                        <td>Rs. {{ "%.2f"|format(day.procedure_total) }}</td>
+                        <td><strong>Rs. {{ "%.2f"|format(day.total) }}</strong></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5>Visit Details</h5>
+    </div>
+    <div class="card-body">
+        {% if visits %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Patient</th>
+                        <th>Slip Fee (Rs.)</th>
+                        <th>Total Paid (Rs.)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for visit in visits %}
+                    <tr>
+                        <td>{{ visit.visit_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ visit.patient.name }}</td>
+                        <td>Rs. {{ "%.2f"|format(visit.slip_fee) }}</td>
+                        <td>Rs. {{ "%.2f"|format(visit.total_paid) }}</td>
+                        <td>{{ visit.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No visits in this period</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

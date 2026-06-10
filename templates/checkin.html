@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="mb-4">Check In: {{ patient.name }}</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Registration Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="slip_fee" class="form-label">Slip Fee (Upfront Payment)</label>
+                        <input type="number" step="0.01" class="form-control" id="slip_fee" name="slip_fee" required>
+                        <div class="form-text">Enter the checkup fee to be paid upfront</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Confirm Check In</button>
+                    <a href="{{ url_for('patients') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
